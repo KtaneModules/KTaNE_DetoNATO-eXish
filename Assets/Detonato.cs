@@ -338,13 +338,14 @@ public class Detonato : MonoBehaviour
         }
     }
     
-#pragma warning disable 414
+    //twitch plays
+    #pragma warning disable 414
     private string TwitchHelpMessage = "Use !{0} press A to press a button with the respective label. You can also use specify the position of the button instead by using !{0} press 4";
-#pragma warning restore 414
+    #pragma warning restore 414
     public KMSelectable[] ProcessTwitchCommand(string command)
     {
         command = command.Trim().ToUpperInvariant();
-        if (!command.StartsWith("PRESS")) return null;
+        if (!command.StartsWith("PRESS") || command.Length != 7) return null;
 
         command = command.Substring(6);
         if (command[0] >= 'A' && command[0] <= 'Z')
@@ -354,7 +355,7 @@ public class Detonato : MonoBehaviour
             {
                 if (buttonLabels[i] == label)
                 {
-                    return new KMSelectable[] {buttons[i]};
+                    return new KMSelectable[] { buttons[i] };
                 }
             }
             return null;
@@ -363,7 +364,7 @@ public class Detonato : MonoBehaviour
         {
             int pos = (int)(command[0] - '1');
             if (pos < 0 || pos > 3) return null;
-            else return new KMSelectable[] {buttons[pos]};
+            else return new KMSelectable[] { buttons[pos] };
         }
     }
 }
