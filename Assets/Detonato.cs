@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using KModkit;
+using System.Collections.Generic;
 
 public class Detonato : MonoBehaviour
 {
@@ -15,7 +15,6 @@ public class Detonato : MonoBehaviour
     public Material on;
     
     string[] buttonLabels = new string[4];
-    string screenLabel;
     
     string[] words = new[] {
         "Alpha", "Alfa", "Aleph", "Alef", "Alepha", "Alefa",
@@ -77,6 +76,8 @@ public class Detonato : MonoBehaviour
     int stage = 0;
     int textId = 0;
     bool isActive = false;
+    char s1 = '0';
+    char s2 = '0';
     
     static int _moduleIdCounter = 1;
     int _moduleId = 0;
@@ -84,16 +85,12 @@ public class Detonato : MonoBehaviour
     void Start()
     {
         _moduleId = _moduleIdCounter++;
-        GetComponent<KMBombModule>().OnActivate += ActivateModule;
-    }
-
-    void Init()
-    {
-        for(int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < buttons.Length; i++)
         {
             int j = i;
             buttons[i].OnInteract += delegate () { OnPress(j); return false; };
         }
+        GetComponent<KMBombModule>().OnActivate += ActivateModule;
     }
     
     IEnumerator Randomize(bool wait = false, bool wordOnly = false)
@@ -149,50 +146,13 @@ public class Detonato : MonoBehaviour
         
         Debug.LogFormat("[DetoNATO #{0}] Stage {1}. The word is \"{2}\". The letters are: {3}.", _moduleId, stage + 1, screenText.text, buttonLabels[0] + ", " + buttonLabels[1] + ", " + buttonLabels[2] + " and " + buttonLabels[3]);
         Debug.LogFormat("[DetoNATO #{0}] The key is \"{1}\".", _moduleId, keys[textId]);
-        isActive = true;
-        
-    }
 
-    void ActivateModule()
-    {
-        StartCoroutine(Randomize());
-        Init();
-    }
-    
-    IEnumerator ReactivateModule()
-    {
-        isActive = false;
-        yield return null;
-        StartCoroutine(Randomize(true, true));
-    }
-    
-    IEnumerator StageLight(int st)
-    {
-        yield return new WaitForSeconds(0.15f);
-        stageLights[stage++].material = on;
-    }
-    
-    void OnPress(int pressedButton)
-    {
-        GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-        GetComponent<KMSelectable>().AddInteractionPunch();
-        if (!isActive)
-        {
-            return;
-        }
-        bool correct = true;
-        int pos = 0;
-        char s1 = '0', s2 = '0';
         switch (stage)
         {
             case 0:
                 s1 = keys[textId][25];
                 for (int i = 0; i < buttons.Length; i++)
                 {
-                    if (keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(buttonLabels[pressedButton]))
-                    {
-                        correct = false;
-                    }
                     if (keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(s1))
                     {
                         s1 = buttonLabels[i][0];
@@ -203,10 +163,6 @@ public class Detonato : MonoBehaviour
                 s1 = keys[textId][0];
                 for (int i = 0; i < buttons.Length; i++)
                 {
-                    if (keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(buttonLabels[pressedButton]))
-                    {
-                        correct = false;
-                    }
                     if (keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(s1))
                     {
                         s1 = buttonLabels[i][0];
@@ -218,16 +174,11 @@ public class Detonato : MonoBehaviour
                 s2 = keys[textId][25];
                 for (int i = 0; i < buttons.Length; i++)
                 {
-                    if (keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(buttonLabels[pressedButton]))
-                    {
-                        pos++;
-                    }
                     if (keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(s2))
                     {
                         s2 = buttonLabels[i][0];
                     }
                 }
-                correct = (pos == 1);
                 for (int i = 0; i < buttons.Length; i++)
                 {
                     if (keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(s2) && keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(s1))
@@ -242,16 +193,11 @@ public class Detonato : MonoBehaviour
                 s2 = keys[textId][0];
                 for (int i = 0; i < buttons.Length; i++)
                 {
-                    if (keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(buttonLabels[pressedButton]))
-                    {
-                        pos++;
-                    }
                     if (keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(s2))
                     {
                         s2 = buttonLabels[i][0];
                     }
                 }
-                correct = (pos == 1);
                 for (int i = 0; i < buttons.Length; i++)
                 {
                     if (keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(s2) && keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(s1))
@@ -275,10 +221,6 @@ public class Detonato : MonoBehaviour
                 }
                 for (int i = 0; i < buttons.Length; i++)
                 {
-                    if (Math.Abs(keys[textId].IndexOf(buttonLabels[i]) - keys[textId].IndexOf(chr)) < Math.Abs(keys[textId].IndexOf(buttonLabels[pressedButton]) - keys[textId].IndexOf(chr)))
-                    {
-                        correct = false;
-                    }
                     if (Math.Abs(keys[textId].IndexOf(buttonLabels[i]) - keys[textId].IndexOf(chr)) < Math.Abs(keys[textId].IndexOf(s1) - keys[textId].IndexOf(chr)))
                     {
                         s1 = buttonLabels[i][0];
@@ -296,10 +238,6 @@ public class Detonato : MonoBehaviour
                 s1 = buttonLabels[0][0];
                 for (int i = 0; i < buttons.Length; i++)
                 {
-                    if (Math.Abs(keys[textId].IndexOf(buttonLabels[i]) - keys[textId].IndexOf(words[textId][0])) < Math.Abs(keys[textId].IndexOf(buttonLabels[pressedButton]) - keys[textId].IndexOf(words[textId][0])))
-                    {
-                        correct = false;
-                    }
                     if (Math.Abs(keys[textId].IndexOf(buttonLabels[i]) - keys[textId].IndexOf(words[textId][0])) < Math.Abs(keys[textId].IndexOf(s1) - keys[textId].IndexOf(words[textId][0])))
                     {
                         s1 = buttonLabels[i][0];
@@ -314,9 +252,111 @@ public class Detonato : MonoBehaviour
                 }
                 break;
         }
+        Debug.LogFormat("[DetoNATO #{0}] Expected letter: {1}.", _moduleId, s1 + (s2 == '0' ? "" : " or " + s2));
+        isActive = true;
+    }
+
+    void ActivateModule()
+    {
+        StartCoroutine(Randomize());
+    }
+    
+    IEnumerator ReactivateModule()
+    {
+        isActive = false;
+        yield return null;
+        StartCoroutine(Randomize(true, true));
+    }
+    
+    IEnumerator StageLight()
+    {
+        yield return new WaitForSeconds(0.15f);
+        stageLights[stage++].material = on;
+    }
+    
+    void OnPress(int pressedButton)
+    {
+        GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, buttons[pressedButton].transform);
+        buttons[pressedButton].AddInteractionPunch();
+        if (!isActive)
+        {
+            return;
+        }
+        bool correct = true;
+        int pos = 0;
+        switch (stage)
+        {
+            case 0:
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    if (keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(buttonLabels[pressedButton]))
+                    {
+                        correct = false;
+                    }
+                }
+                break;
+            case 1:
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    if (keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(buttonLabels[pressedButton]))
+                    {
+                        correct = false;
+                    }
+                }
+                break;
+            case 2:
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    if (keys[textId].IndexOf(buttonLabels[i]) < keys[textId].IndexOf(buttonLabels[pressedButton]))
+                    {
+                        pos++;
+                    }
+                }
+                correct = (pos == 1);
+                break;
+            case 3:
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    if (keys[textId].IndexOf(buttonLabels[i]) > keys[textId].IndexOf(buttonLabels[pressedButton]))
+                    {
+                        pos++;
+                    }
+                }
+                correct = (pos == 1);
+                break;
+            case 4:
+                string sn = info.GetSerialNumber();
+                char chr = 'A';
+                for (int i = 0; i < sn.Length; i++)
+                {
+                    if (char.IsLetter(sn[i]))
+                    {
+                        chr = sn[i];
+                        break;
+                    }
+                }
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    if (Math.Abs(keys[textId].IndexOf(buttonLabels[i]) - keys[textId].IndexOf(chr)) < Math.Abs(keys[textId].IndexOf(buttonLabels[pressedButton]) - keys[textId].IndexOf(chr)))
+                    {
+                        correct = false;
+                    }
+                }
+                break;
+            case 5:
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    if (Math.Abs(keys[textId].IndexOf(buttonLabels[i]) - keys[textId].IndexOf(words[textId][0])) < Math.Abs(keys[textId].IndexOf(buttonLabels[pressedButton]) - keys[textId].IndexOf(words[textId][0])))
+                    {
+                        correct = false;
+                    }
+                }
+                break;
+        }
         if (correct)
         {
-            StartCoroutine(StageLight(stage));
+            isActive = false;
+            StartCoroutine(StageLight());
             if (stage < 5)
             {
                 Debug.LogFormat("[DetoNATO #{0}] Letter {1} was correct. Advancing to stage {2}.", _moduleId, buttonLabels[pressedButton], stage + 2);
@@ -325,6 +365,7 @@ public class Detonato : MonoBehaviour
             else
             {
                 screenText.text = "";
+                Debug.LogFormat("[DetoNATO #{0}] Letter {1} was correct.", _moduleId, buttonLabels[pressedButton]);
                 Debug.LogFormat("[DetoNATO #{0}] Module solved!", _moduleId);
                 GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
                 GetComponent<KMBombModule>().HandlePass();
@@ -332,7 +373,7 @@ public class Detonato : MonoBehaviour
         }
         else
         {
-            Debug.LogFormat("[DetoNATO #{0}] Letter {1} was incorrect (expected {2}). Resetting the stage.", _moduleId, buttonLabels[pressedButton], s1 + (s2 == '0' ? "" : " or " + s2));
+            Debug.LogFormat("[DetoNATO #{0}] Letter {1} was incorrect. Resetting the stage.", _moduleId, buttonLabels[pressedButton]);
             GetComponent<KMBombModule>().HandleStrike();
             StartCoroutine(ReactivateModule());
         }
@@ -365,6 +406,22 @@ public class Detonato : MonoBehaviour
             int pos = (int)(command[0] - '1');
             if (pos < 0 || pos > 3) return null;
             else return new KMSelectable[] { buttons[pos] };
+        }
+    }
+
+    public IEnumerator TwitchHandleForcedSolve()
+    {
+        int start = stage;
+        for (int i = start; i < 6; i++)
+        {
+            while (!isActive) yield return true;
+            List<int> positions = new List<int>();
+            for (int j = 0; j < buttons.Length; j++)
+            {
+                if (buttonLabels[j] == s1.ToString() || buttonLabels[j] == s2.ToString())
+                    positions.Add(j);
+            }
+            buttons[positions.PickRandom()].OnInteract();
         }
     }
 }
