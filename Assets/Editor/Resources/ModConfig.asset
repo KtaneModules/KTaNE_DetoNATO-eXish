@@ -19,6 +19,6 @@ MonoBehaviour:
     maintained): https://steamcommunity.com/sharedfiles/filedetails/?id=1621405277\n\r\nmoduleID:
     Detonato\r\n\r\nManual [HTML]: https://ktane.timwi.de/HTML/DetoNATO.html\r\nManual
     [PDF]: https://ktane.timwi.de/PDF/DetoNATO.pdf"
-  version: 1.2
+  version: 1.3
   outputFolder: build
   previewImage: {fileID: 2800000, guid: f2dd46fa28e3c06468545cb7286098be, type: 3}

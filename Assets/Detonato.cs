@@ -76,8 +76,8 @@ public class Detonato : MonoBehaviour
     int stage = 0;
     int textId = 0;
     bool isActive = false;
-    char s1 = '0';
-    char s2 = '0';
+    char s1;
+    char s2;
     
     static int _moduleIdCounter = 1;
     int _moduleId = 0;
@@ -147,6 +147,8 @@ public class Detonato : MonoBehaviour
         Debug.LogFormat("[DetoNATO #{0}] Stage {1}. The word is \"{2}\". The letters are: {3}.", _moduleId, stage + 1, screenText.text, buttonLabels[0] + ", " + buttonLabels[1] + ", " + buttonLabels[2] + " and " + buttonLabels[3]);
         Debug.LogFormat("[DetoNATO #{0}] The key is \"{1}\".", _moduleId, keys[textId]);
 
+        s1 = '0';
+        s2 = '0';
         switch (stage)
         {
             case 0:
